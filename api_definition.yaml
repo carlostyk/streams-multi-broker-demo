@@ -1,0 +1,65 @@
+components: {}
+info:
+  title: Kafka -> AMPQ
+  version: 1.0.0
+openapi: 3.0.3
+paths: {}
+servers:
+  - url: http://tyk-gateway:8282/kafka-ampq/
+x-tyk-api-gateway:
+  info:
+    dbId: 6788e705058f855671cb0402
+    id: 68621a53c9b24b6540c8d4fd09e167f3
+    name: Kafka -> AMPQ
+    orgId: 65170f81ea9bf604bb474c02
+    state:
+      active: true
+      internal: true
+  middleware:
+    global:
+      contextVariables:
+        enabled: true
+      trafficLogs:
+        enabled: true
+  server:
+    listenPath:
+      strip: true
+      value: /kafka-ampq/
+  upstream:
+    url: ''
+x-tyk-streaming:
+  streams:
+    AMPQ:
+      input:
+        amqp_1:
+          sasl:
+            mechanism: plain
+            password: guest
+            user: guest
+          source_address: EXTERNAL
+          urls:
+            - amqp://localhost:5672
+      output:
+        broker:
+          outputs:
+            - kafka:
+                addresses:
+                  - 127.0.0.1:9092
+                client_id: tyk_streams_producer
+                max_in_flight: 1
+                retry_as_batch: true
+                topic: FOO
+            - amqp_1:
+                sasl:
+                  mechanism: plain
+                  password: guest
+                  user: guest
+                target_address: FOO
+                urls:
+                  - amqp://localhost:5672
+          pattern: fan_out
+      pipeline:
+        processors:
+          - mapping: |
+              # Remove all existing metadata from messages
+              meta = deleted()
