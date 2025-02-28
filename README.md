@@ -116,7 +116,7 @@ input:
       user: guest
     source_address: EXTERNAL
     urls:
-      - amqp://localhost:5672
+      - amqp://rabbitmq:5672
 output:
   broker:
     outputs:
@@ -134,7 +134,7 @@ output:
             user: guest
           target_address: FOO
           urls:
-            - amqp://localhost:5672
+            - amqp://rabbitmq:5672
     pattern: fan_out
 pipeline:
   processors:

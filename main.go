@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	kafkaBrokerAddress = "127.0.0.1:9092"
+	kafkaBrokerAddress = "127.0.0.1:9093"
 	kafkaTopic         = "FOO"
 	kafkaGroupID       = "demo-group"
 
