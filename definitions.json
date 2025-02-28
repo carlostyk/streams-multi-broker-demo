@@ -1,0 +1,30 @@
+{
+  "users": [
+    {
+      "name": "user1",
+      "password": "password1",
+      "tags": "administrator"
+    },
+    {
+      "name": "user2",
+      "password": "password2",
+      "tags": "management"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "user1",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    },
+    {
+      "user": "user2",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ]
+}
