@@ -56,21 +56,25 @@ The Go application demonstrates:
 
 ## Setup Instructions
 
-### 1. Start the Infrastructure
+### 1, Add your Dashboard License
+
+Add your Tyk Dashboard license to .env (see .env.example)
+
+### 2. Start the Infrastructure
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 This will start Kafka, Zookeeper. Tyk Dashboard, Tyk API Gateway, Tyk Pump, and RabbitMQ services.
 
-### 2. Configure Tyk Gateway and Dashboard
+### 3. Configure Tyk Gateway and Dashboard
 
 #### Add API Definition
 
 Add the API definition to your Tyk Gateway by following the manual steps below.
 
-### 3. Run the Demo Application
+### 4. Run the Demo Application
 
 ```bash
 go run main.go
@@ -79,7 +83,7 @@ go run main.go
 The application will:
 - Connect to Kafka and AMQP endpoints
 - Start sending test messages to the EXTERNAL AMQP address
-- Display a web interface at http://localhost:8080 showing the message flow
+- Display a web interface at http://localhost:8081 showing the message flow
 
 ## How It Works
 
@@ -95,8 +99,9 @@ The application will:
 
 To add the Stream definition to your Tyk Gateway:
 
-1. Access your Tyk Dashboard or API management interface
-2. Create a new API using the "Streams & Events" tab under "API Management"
+1. Access your Tyk Dashboard http://localhost:3000
+2. Bootstrap your installation adding the relevant information
+3. Create a new API using the "Streams & Events" tab under "API Management"
 
 ![Streams API](streamsapi1.png)
 

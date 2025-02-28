@@ -61,11 +61,11 @@ func main() {
 
 	http.HandleFunc("/", serveIndex)
 	http.HandleFunc("/sse", serveSSE)
-	server := &http.Server{Addr: ":8080"}
+	server := &http.Server{Addr: ":8081"}
 
 	// Start server in a goroutine
 	go func() {
-		log.Println("Server running on http://localhost:8080")
+		log.Println("Server running on http://localhost:8081")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Printf("HTTP server error: %v\n", err)
 			cancel() // Cancel context if server fails
