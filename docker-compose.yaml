@@ -1,10 +1,6 @@
 version: "3.8"
 
 services:
-  #  labs-redis:
-  #    image: redis:6.2.5
-  #    ports:
-  #      - "1379:6379"
 
   labs-nats:
     image: nats:2.10.14
@@ -15,6 +11,8 @@ services:
       - "8222:8222"
     command:
       - "-js"
+    networks:
+      - tyk
 
   labs-zookeeper:
     restart: always
@@ -25,9 +23,13 @@ services:
       - "zookeeper-data:/bitnami"
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - tyk
+
   labs-kafka:
     restart: always
     image: docker.io/bitnami/kafka:3.3
+    container_name: kafka
     ports:
       - "9093:9093"
       - "9092:9092"
@@ -43,6 +45,8 @@ services:
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
     depends_on:
       - labs-zookeeper
+    networks:
+      - tyk
 
   rabbitmq:
     image: rabbitmq:4
@@ -57,9 +61,83 @@ services:
     environment:
       RABBITMQ_LOAD_DEFINITIONS: "true"
       RABBITMQ_DEFINITIONS_FILE: "/etc/rabbitmq/definitions.json"
+    networks:
+      - tyk
+  tyk-dashboard:
+    image: tykio/tyk-dashboard:v5.8.1-alpha1
+    container_name: tyk-dashboard
+    environment:
+      - TYK_DB_LICENSEKEY=${DASH_LICENSE:?License key missing from Docker environment file "".env" file.  Review The Getting Started steps in README.md.}
+      - TYK_DB_STORAGE_MAIN_TYPE=postgres
+      - TYK_DB_STORAGE_MAIN_CONNECTIONSTRING=user=postgres password=topsecretpassword host=tyk-postgres port=5432 database=tyk_analytics
+    depends_on:
+      tyk-postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./confs/tyk_analytics.env
+    networks:
+      - tyk
+
+  tyk-gateway:
+    image: tykio/tyk-gateway-ee:v5.8.1-alpha1
+    container_name: tyk-gateway
+    ports:
+      - "8081:8080"
+    env_file:
+      - ./confs/tyk.env
+    networks:
+      - tyk
+
+  tyk-pump:
+    image: tykio/tyk-pump-docker-pub:v1.11.0
+    container_name: tyk-pump
+    env_file:
+      - ./confs/pump.env
+      - ./confs/pump.postgres.env
+    depends_on:
+      tyk-postgres:
+        condition: service_healthy
+    networks:
+      - tyk
+
+  tyk-redis:
+    image: redis
+    container_name: tyk-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - tyk
+
+  tyk-postgres:
+    image: postgres:latest
+    container_name: tyk-postgres
+    environment:
+      - POSTGRES_DB=tyk_analytics
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=topsecretpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tyk
+  
+networks:
+  tyk:
 
 volumes:
   kafka-data:
   zookeeper-data:
   rabbitmq_data:
-#      - nats_data:/tmp/nats/jetstream
+  redis-data:
+  postgres-data:
+  # nats_data:/tmp/nats/jetstream

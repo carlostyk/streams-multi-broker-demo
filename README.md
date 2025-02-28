@@ -32,8 +32,6 @@ The demo implements a streaming pipeline with the following components:
 ## Prerequisites
 
 - Docker and Docker Compose
-- Tyk Gateway v5.8.1-alpha1 (with Streams capability)
-- Tyk Dashboard v5.8.1-alpha1
 - Go 1.22+ (for running the demo application)
 
 ## Components
@@ -44,7 +42,7 @@ The demo uses Docker Compose to set up the required infrastructure:
 
 - **Kafka & Zookeeper**: Message broker for high-throughput messaging
 - **RabbitMQ**: AMQP 1.0 message broker
-- **NATS**: Additional messaging system (optional)
+- **Tyk Stack**: Including Tyk Dashboard, Tyk API Gateway and Tyk Pump
 
 ### Demo Application (main.go)
 
@@ -55,10 +53,6 @@ The Go application demonstrates:
 3. Publishing messages to an external AMQP address
 4. Displaying real-time status and messages via a web interface
 
-### Tyk API Definition (api_definition.yaml)
-
-The Tyk API definition configures the streaming pipeline that connects the AMQP source to both Kafka and AMQP destinations.
-
 ## Setup Instructions
 
 ### 1. Start the Infrastructure
@@ -67,27 +61,9 @@ The Tyk API definition configures the streaming pipeline that connects the AMQP 
 docker-compose up -d
 ```
 
-This will start Kafka, Zookeeper, and RabbitMQ services.
+This will start Kafka, Zookeeper. Tyk Dashboard, Tyk API Gateway, Tyk Pump, and RabbitMQ services.
 
 ### 2. Configure Tyk Gateway and Dashboard
-
-#### Tyk Gateway Configuration
-
-When running the Tyk Gateway (v5.8.1-alpha1), ensure the following environment variables are set to enable streaming:
-
-```bash
-TYK_GW_STREAMING_ALLOWALL=true
-TYK_GW_STREAMING_ENABLED=true
-```
-
-#### Tyk Dashboard Configuration
-
-When running the Tyk Dashboard (v5.8.1-alpha1), ensure the following environment variables are set:
-
-```bash
-TYK_DB_STREAMING_ALLOWALL=true
-TYK_DB_STREAMING_ENABLED=true
-```
 
 #### Add API Definition
 
@@ -119,8 +95,17 @@ The application will:
 To add the Stream definition to your Tyk Gateway:
 
 1. Access your Tyk Dashboard or API management interface
-2. Create a new API or edit an existing one
-3. In the API definition, add the following Stream configuration:
+2. Create a new API using the "Streams & Events" tab under "API Management"
+
+![Streams API](streamsapi1.png)
+
+3. In the step "Streams config framework" select "Advanced" for "Input, Processor and Output"
+
+![Streams API](streamsapi2.png)
+
+4. In the API definition "Streaming" section, add the following Stream configuration, select "Gateway Status" as "Active" and "Acess" "External":
+
+![Streams API](streamsapi3.png)
 
 ```yaml
 input:
@@ -158,8 +143,8 @@ pipeline:
         meta = deleted()
 ```
 
-4. Save the API definition
-5. Reload or restart your Tyk Gateway to apply the changes
+5. Save the API definition
+6. Reload or restart your Tyk Gateway to apply the changes
 
 ## Key Features Demonstrated
 
