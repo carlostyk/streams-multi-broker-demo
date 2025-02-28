@@ -112,6 +112,7 @@ To add the Stream definition to your Tyk Gateway:
 4. In the API definition "Streaming" section, add the following Stream configuration, select "Gateway Status" as "Active" and "Acess" "External":
 
 ![Streams API](streamsapi3.png)
+![Streams API](streamsapi4.png)
 
 ```yaml
 input:
