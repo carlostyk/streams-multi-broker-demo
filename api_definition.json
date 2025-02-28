@@ -8,7 +8,7 @@
   "paths": {},
   "servers": [
     {
-      "url": "http://tyk-gateway:8282/kafka-ampq/"
+      "url": "http://tyk-gateway:8081/kafka-ampq/"
     }
   ],
   "x-tyk-api-gateway": {
@@ -64,7 +64,7 @@
               {
                 "kafka": {
                   "addresses": [
-                    "127.0.0.1:9092"
+                    "kafka:9092"
                   ],
                   "client_id": "tyk_streams_producer",
                   "max_in_flight": 1,

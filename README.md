@@ -33,6 +33,7 @@ The demo implements a streaming pipeline with the following components:
 
 - Docker and Docker Compose
 - Go 1.22+ (for running the demo application)
+- Add *127.0.0.1 kafka* to your hosts file.
 
 ## Components
 
@@ -122,7 +123,7 @@ output:
     outputs:
       - kafka:
           addresses:
-            - 127.0.0.1:9092
+            - kafka:9092
           client_id: tyk_streams_producer
           max_in_flight: 1
           retry_as_batch: true
@@ -170,7 +171,7 @@ output:
     output:
       kafka:
         addresses:
-          - 127.0.0.1:9092
+          - kafka:9092
         client_id: tyk_streams_producer
         topic: FOO
     fallbacks:
@@ -181,7 +182,7 @@ output:
             user: guest
           target_address: KAFKA_DLQ
           urls:
-            - amqp://localhost:5672
+            - amqp://rabbitmq:5672
 ```
 
 For AMQP with Kafka fallback:
@@ -197,11 +198,11 @@ output:
           user: guest
         target_address: FOO
         urls:
-          - amqp://localhost:5672
+          - amqp://rabbitmq:5672
     fallbacks:
       - kafka:
           addresses:
-            - 127.0.0.1:9092
+            - kafka:9092
           client_id: tyk_streams_dlq
           topic: AMQP_DLQ
 ```
@@ -218,7 +219,7 @@ streams:
       # Read from Kafka DLQ
       kafka:
         addresses:
-          - 127.0.0.1:9092
+          - kafka:9092
         topics:
           - AMQP_DLQ
         consumer_group: dlq_recovery
@@ -233,7 +234,7 @@ streams:
               user: guest
             target_address: FOO
             urls:
-              - amqp://localhost:5672
+              - amqp://rabbitmq:5672
         base_delay: 30s
         max_delay: 5m
         max_retries: 20
@@ -252,7 +253,7 @@ output:
     output:
       kafka:
         addresses:
-          - 127.0.0.1:9092
+          - kafka:9092
         topic: FOO
     # Optional retry parameters
     base_delay: 1s
@@ -288,7 +289,7 @@ input:
       user: $api_config.amqp_user
     source_address: EXTERNAL
     urls:
-      - amqp://localhost:5672
+      - amqp://rabbitmq:5672
 ```
 
 With this approach, you can:
